@@ -311,6 +311,10 @@ class _HomePageState extends State<HomePage> {
                         data['tags'] ?? [],
                       );
 
+                      if (!noteTags.contains('Work')) {
+                        return SizedBox.shrink();
+                      }
+
                       return InkWell(
                         onTap: () {
                           Navigator.push(
