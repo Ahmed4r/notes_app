@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "732670439433",
+    "project_id": "eduportal-69436",
+    "storage_bucket": "eduportal-69436.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:732670439433:android:56b41545e5c7d2ef5cc8d8",
+        "android_client_info": {
+          "package_name": "com.example.crud_firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUnWeH5ZIvemUREfrE2q1S_GOKtTjewC0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
