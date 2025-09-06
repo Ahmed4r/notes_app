@@ -140,143 +140,151 @@ class _AddNoteState extends State<AddNote> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: titleController,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: widget.docID == null ? 'Title' : 'Edit Title',
-                hintStyle: TextStyle(fontSize: 40, color: Color(0xff959da6)),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.all(16.0),
-              ),
-              maxLines: 2,
-              keyboardType: TextInputType.multiline,
-            ),
-            // description
-            TextField(
-              controller: descriptionController,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: widget.docID == null
-                    ? 'Description'
-                    : 'Edit Description',
-                hintStyle: TextStyle(
-                  fontSize: 20,
-                  color: Color.fromARGB(255, 96, 98, 100),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: titleController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: widget.docID == null ? 'Title' : 'Edit Title',
+                  hintStyle: TextStyle(fontSize: 40, color: Color(0xff959da6)),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.all(16.0),
                 ),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.all(16.0),
+                maxLines: 2,
+                keyboardType: TextInputType.multiline,
               ),
-              maxLines: 5,
-              keyboardType: TextInputType.multiline,
-            ),
-            SizedBox(height: 200),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Text(
-                'Tags',
-                style: TextStyle(color: Color(0xff959da6), fontSize: 20),
+              // description
+              TextField(
+                controller: descriptionController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: widget.docID == null
+                      ? 'Description'
+                      : 'Edit Description',
+                  hintStyle: TextStyle(
+                    fontSize: 20,
+                    color: Color.fromARGB(255, 96, 98, 100),
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.all(16.0),
+                ),
+                maxLines: 5,
+                keyboardType: TextInputType.multiline,
               ),
-            ),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (var tag in _tags)
-                  Chip(
-                    label: Text(
-                      tag,
-                      style: const TextStyle(color: Colors.white),
+              SizedBox(height: 200),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Tags',
+                  style: TextStyle(color: Color(0xff959da6), fontSize: 20),
+                ),
+              ),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (var tag in _tags)
+                    Chip(
+                      label: Text(
+                        tag,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      backgroundColor: Color(0xff2a2a2a),
+                      deleteIcon: const Icon(
+                        Icons.close,
+                        color: Colors.white70,
+                      ),
+                      onDeleted: () => _removeTag(tag),
                     ),
-                    backgroundColor: Color(0xff2a2a2a),
-                    deleteIcon: const Icon(Icons.close, color: Colors.white70),
-                    onDeleted: () => _removeTag(tag),
-                  ),
 
-                // add tag button
-                GestureDetector(
-                  onTap: _showAddTagDialog,
-                  child: DottedBorder(
-                    color: Colors.grey,
-                    strokeWidth: 2,
-                    dashPattern: const [6, 2],
-                    borderType: BorderType.RRect,
-                    radius: const Radius.circular(30),
-                    child: Container(
-                      height: 40,
-                      width: 120,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.add, color: Colors.grey, size: 18),
-                          SizedBox(width: 6),
-                          Text(
-                            "Add Tag",
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
-                          ),
-                        ],
+                  // add tag button
+                  GestureDetector(
+                    onTap: _showAddTagDialog,
+                    child: DottedBorder(
+                      color: Colors.grey,
+                      strokeWidth: 2,
+                      dashPattern: const [6, 2],
+                      borderType: BorderType.RRect,
+                      radius: const Radius.circular(30),
+                      child: Container(
+                        height: 40,
+                        width: 120,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.add, color: Colors.grey, size: 18),
+                            SizedBox(width: 6),
+                            Text(
+                              "Add Tag",
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: 80),
-            Center(
-              child: InkWell(
-                onTap: () {
-                  if (widget.docID == null) {
-                    firestore.addNote(
-                      titleController.text,
-                      descriptionController.text,
-                      _tags,
-                    );
-                  } else {
-                    firestore.updateNotes(
-                      widget.docID!,
-                      titleController.text,
-                      descriptionController.text,
-                      _tags,
-                    );
-                  }
+                ],
+              ),
+              SizedBox(height: 50),
+              Center(
+                child: InkWell(
+                  onTap: () {
+                    if (widget.docID == null) {
+                      firestore.addNote(
+                        titleController.text,
+                        descriptionController.text,
+                        _tags,
+                      );
+                    } else {
+                      firestore.updateNotes(
+                        widget.docID!,
+                        titleController.text,
+                        descriptionController.text,
+                        _tags,
+                      );
+                    }
 
-                  titleController.clear();
-                  descriptionController.clear();
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  height: 70,
-                  width: 400,
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.save, color: Colors.white),
-                      SizedBox(width: 10),
-                      Text(
-                        'Save',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    ],
+                    titleController.clear();
+                    descriptionController.clear();
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    height: 70,
+                    width: 400,
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.save, color: Colors.white),
+                        SizedBox(width: 10),
+                        Text(
+                          'Save',
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
