@@ -33,3 +33,8 @@ workflows:
     artifacts:
       - build/ios/ipa/*.ipa
       - build/ios/ipa/*.app
+    notifications:
+      email:
+        recipients:
+        - "ahmedrady03@gmail.com"
+
