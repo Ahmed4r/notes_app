@@ -201,7 +201,7 @@ class _AddNoteState extends State<AddNote> {
                 maxLines: 5,
                 keyboardType: TextInputType.multiline,
               ),
-              SizedBox(height: 200),
+              SizedBox(height: 10), //200
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Text(
