@@ -1,6 +1,6 @@
 workflows:
-  ios-workflow:
-    name: iOS IPA Build
+  ios-ipa-build:
+    name: 🎉 iOS Build
     max_build_duration: 120
     instance_type: mac_mini_m1
     environment:
@@ -13,28 +13,50 @@ workflows:
         - $HOME/.pub-cache
         - ios/Pods
     scripts:
+      - name: Flutter pub get
+        script: |
+          flutter pub get
+
       - name: Set iOS deployment target
         script: |
           cd ios
-          if ! grep -q "platform :ios, '15.0'" Podfile; then
-            echo "platform :ios, '15.0'" | cat - Podfile > temp && mv temp Podfile
+          if ! grep -q "platform :ios, '15.5'" Podfile; then
+            echo "platform :ios, '15.5'" | cat - Podfile > temp && mv temp Podfile
           fi
           cd ..
+
       - name: Clean and update CocoaPods
         script: |
-          flutter clean
-          flutter pub get
+          rm -f ios/Podfile.lock
           cd ios
-          pod install --repo-update
+          pod repo update
+          pod deintegrate
+          pod install
           cd ..
-      - name: Build IPA
+
+      - name: Build iOS (no signing)
         script: |
-          flutter build ipa --release --no-tree-shake-icons
+          flutter build ios --release --no-codesign
+
+      - name: Create Payload folder
+        working_directory: build/ios/iphoneos
+        script: mkdir Payload
+
+      - name: Move Runner.app into Payload
+        working_directory: build/ios/iphoneos
+        script: mv Runner.app/ Payload
+
+      - name: Zip output IPA
+        working_directory: build/ios/iphoneos
+        script: zip -qq -r -9 FlutterIpaExport.ipa Payload
+
     artifacts:
-      - build/ios/ipa/*.ipa
-      - build/ios/ipa/*.app
+      - build/ios/iphoneos/FlutterIpaExport.ipa
+
     notifications:
       email:
         recipients:
-        - "ahmedrady03@gmail.com"
-
+          - "ahmedrady03@gmail.com"
+        notify:
+          success: true
+          failure: true
