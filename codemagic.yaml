@@ -57,6 +57,3 @@ workflows:
       email:
         recipients:
           - "ahmedrady03@gmail.com"
-        notify:
-          success: true
-          failure: true
