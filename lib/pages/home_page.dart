@@ -6,6 +6,7 @@ import 'package:crud_firebase/service/firebase_auth.dart';
 import 'package:crud_firebase/service/firestore.dart';
 import 'package:crud_firebase/shared/app_colors.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -20,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   final firestore = FirestoreService();
 
   final TextEditingController controller = TextEditingController();
-  FirebaseAuthService auth = FirebaseAuthService();
+  final auth = FirebaseAuthService();
 
   @override
   void dispose() {
@@ -31,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+      initialIndex: 0,
       length: 3,
       child: Scaffold(
         backgroundColor: AppColors.backgroundColor,
@@ -58,6 +60,8 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: AppColors.backgroundColor,
           title: const Text('Pinotes', style: TextStyle(color: Colors.white)),
           bottom: TabBar(
+            splashBorderRadius: BorderRadius.circular(50),
+
             tabs: [
               Tab(text: "All Notes"),
               Tab(text: "Work"),
@@ -79,6 +83,7 @@ class _HomePageState extends State<HomePage> {
         ),
         body: TabBarView(
           children: [
+            // all Notes Tab
             StreamBuilder<QuerySnapshot>(
               stream: firestore.readNotes(),
               builder: (context, snapshot) {
@@ -124,127 +129,175 @@ class _HomePageState extends State<HomePage> {
                             ),
                           );
                         },
-                        child: Card(
-                          color: Color(0xff1e2837),
-                          child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      noteTitle,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      noteTime,
-                                      style: TextStyle(
-                                        color: Colors.white30,
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  noteDescription,
-                                  style: TextStyle(
-                                    color: Colors.white30,
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 16,
+                        child: Dismissible(
+                          key: Key(docID),
+                          background: Container(
+                            color: Colors.blue,
+                            alignment: Alignment.centerLeft,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: const Icon(Icons.edit, color: Colors.white),
+                          ),
+                          secondaryBackground: Container(
+                            color: Colors.red,
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: const Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                            ),
+                          ),
+                          confirmDismiss: (direction) async {
+                            if (direction == DismissDirection.startToEnd) {
+                              // 👉 Edit
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddNote(
+                                    docID: docID,
+                                    oldTitle: noteTitle,
+                                    oldDescription: noteDescription,
+                                    tags: noteTags,
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    for (
-                                      var i = 0;
-                                      i < noteTags.length && i < 2;
-                                      i++
-                                    )
-                                      Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: getTagType(
-                                              noteTags[i],
-                                            ).color,
-                                            borderRadius: BorderRadius.circular(
-                                              30,
-                                            ),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
-                                          ),
-                                          child: Text(
-                                            '#${noteTags[i]}',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                    // لو أكتر من ٢ تاج، اعمل "…+X"
-                                    if (noteTags.length > 2)
-                                      Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade700,
-                                            borderRadius: BorderRadius.circular(
-                                              30,
-                                            ),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
-                                          ),
-                                          child: Text(
-                                            '+${noteTags.length - 2}',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                    const Spacer(),
-
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.edit,
-                                        color: Colors.white38,
-                                      ),
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                AddNote(docID: docID),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(
-                                        CupertinoIcons.delete,
-                                        color: Colors.white38,
-                                      ),
-                                      onPressed: () {
-                                        firestore.deleteNote(docID);
-                                      },
-                                    ),
-                                  ],
+                              );
+                              return false; // ما تمسحش العنصر
+                            } else if (direction ==
+                                DismissDirection.endToStart) {
+                              // 👉 Delete
+                              await firestore.deleteNote(docID);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("${data['title']} deleted"),
                                 ),
-                              ],
+                              );
+                              return true; // يتمسح فعلاً
+                            }
+                            return false;
+                          },
+                          child: Card(
+                            color: Color(0xff1e2837),
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        noteTitle,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        noteTime,
+                                        style: TextStyle(
+                                          color: Colors.white30,
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    noteDescription,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: Colors.white30,
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      for (
+                                        var i = 0;
+                                        i < noteTags.length && i < 2;
+                                        i++
+                                      )
+                                        Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: getTagType(
+                                                noteTags[i],
+                                              ).color,
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 6,
+                                            ),
+                                            child: Text(
+                                              '#${noteTags[i]}',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                      // لو أكتر من ٢ تاج، اعمل "…+X"
+                                      if (noteTags.length > 2)
+                                        Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade700,
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 6,
+                                            ),
+                                            child: Text(
+                                              '+${noteTags.length - 2}',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                      const Spacer(),
+
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          color: Colors.white38,
+                                          // color: Colors.green,
+                                        ),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AddNote(docID: docID),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          CupertinoIcons.delete,
+                                          // color: Colors.white38,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () {
+                                          firestore.deleteNote(docID);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -280,7 +333,6 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
-
             // Work Tab
             StreamBuilder<QuerySnapshot>(
               stream: firestore.readNotes(),
@@ -331,127 +383,173 @@ class _HomePageState extends State<HomePage> {
                             ),
                           );
                         },
-                        child: Card(
-                          color: Color(0xff1e2837),
-                          child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      noteTitle,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      noteTime,
-                                      style: TextStyle(
-                                        color: Colors.white30,
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  noteDescription,
-                                  style: TextStyle(
-                                    color: Colors.white30,
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 16,
+                        child: Dismissible(
+                          key: Key(docID),
+                          background: Container(
+                            color: Colors.blue,
+                            alignment: Alignment.centerLeft,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: const Icon(Icons.edit, color: Colors.white),
+                          ),
+                          secondaryBackground: Container(
+                            color: Colors.red,
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: const Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                            ),
+                          ),
+                          confirmDismiss: (direction) async {
+                            if (direction == DismissDirection.startToEnd) {
+                              // 👉 Edit
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddNote(
+                                    docID: docID,
+                                    oldTitle: noteTitle,
+                                    oldDescription: noteDescription,
+                                    tags: noteTags,
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    for (
-                                      var i = 0;
-                                      i < noteTags.length && i < 2;
-                                      i++
-                                    )
-                                      Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: getTagType(
-                                              noteTags[i],
-                                            ).color,
-                                            borderRadius: BorderRadius.circular(
-                                              30,
-                                            ),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
-                                          ),
-                                          child: Text(
-                                            '#${noteTags[i]}',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                    // لو أكتر من ٢ تاج، اعمل "…+X"
-                                    if (noteTags.length > 2)
-                                      Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade700,
-                                            borderRadius: BorderRadius.circular(
-                                              30,
-                                            ),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
-                                          ),
-                                          child: Text(
-                                            '+${noteTags.length - 2}',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                    const Spacer(),
-
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.edit,
-                                        color: Colors.white38,
-                                      ),
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                AddNote(docID: docID),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(
-                                        CupertinoIcons.delete,
-                                        color: Colors.white38,
-                                      ),
-                                      onPressed: () {
-                                        firestore.deleteNote(docID);
-                                      },
-                                    ),
-                                  ],
+                              );
+                              return false; // ما تمسحش العنصر
+                            } else if (direction ==
+                                DismissDirection.endToStart) {
+                              // 👉 Delete
+                              await firestore.deleteNote(docID);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("${data['title']} deleted"),
                                 ),
-                              ],
+                              );
+                              return true; // يتمسح فعلاً
+                            }
+                            return false;
+                          },
+                          child: Card(
+                            color: Color(0xff1e2837),
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        noteTitle,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        noteTime,
+                                        style: TextStyle(
+                                          color: Colors.white30,
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    noteDescription,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: Colors.white30,
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      for (
+                                        var i = 0;
+                                        i < noteTags.length && i < 2;
+                                        i++
+                                      )
+                                        Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: getTagType(
+                                                noteTags[i],
+                                              ).color,
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 6,
+                                            ),
+                                            child: Text(
+                                              '#${noteTags[i]}',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                      // لو أكتر من ٢ تاج، اعمل "…+X"
+                                      if (noteTags.length > 2)
+                                        Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade700,
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 6,
+                                            ),
+                                            child: Text(
+                                              '+${noteTags.length - 2}',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                      const Spacer(),
+
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          color: Colors.white38,
+                                        ),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AddNote(docID: docID),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          CupertinoIcons.delete,
+                                          color: Colors.white38,
+                                        ),
+                                        onPressed: () {
+                                          firestore.deleteNote(docID);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -463,7 +561,7 @@ class _HomePageState extends State<HomePage> {
                 return Center(child: CircularProgressIndicator());
               },
             ),
-
+            // Personal Tab
             StreamBuilder<QuerySnapshot>(
               stream: firestore.readNotes(),
               builder: (context, snapshot) {
@@ -513,127 +611,173 @@ class _HomePageState extends State<HomePage> {
                             ),
                           );
                         },
-                        child: Card(
-                          color: Color(0xff1e2837),
-                          child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      noteTitle,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      noteTime,
-                                      style: TextStyle(
-                                        color: Colors.white30,
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  noteDescription,
-                                  style: TextStyle(
-                                    color: Colors.white30,
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 16,
+                        child: Dismissible(
+                          key: Key(docID),
+                          background: Container(
+                            color: Colors.blue,
+                            alignment: Alignment.centerLeft,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: const Icon(Icons.edit, color: Colors.white),
+                          ),
+                          secondaryBackground: Container(
+                            color: Colors.red,
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: const Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                            ),
+                          ),
+                          confirmDismiss: (direction) async {
+                            if (direction == DismissDirection.startToEnd) {
+                              // 👉 Edit
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddNote(
+                                    docID: docID,
+                                    oldTitle: noteTitle,
+                                    oldDescription: noteDescription,
+                                    tags: noteTags,
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    for (
-                                      var i = 0;
-                                      i < noteTags.length && i < 2;
-                                      i++
-                                    )
-                                      Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: getTagType(
-                                              noteTags[i],
-                                            ).color,
-                                            borderRadius: BorderRadius.circular(
-                                              30,
-                                            ),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
-                                          ),
-                                          child: Text(
-                                            '#${noteTags[i]}',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                    // لو أكتر من ٢ تاج، اعمل "…+X"
-                                    if (noteTags.length > 2)
-                                      Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade700,
-                                            borderRadius: BorderRadius.circular(
-                                              30,
-                                            ),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
-                                          ),
-                                          child: Text(
-                                            '+${noteTags.length - 2}',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                    const Spacer(),
-
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.edit,
-                                        color: Colors.white38,
-                                      ),
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                AddNote(docID: docID),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(
-                                        CupertinoIcons.delete,
-                                        color: Colors.white38,
-                                      ),
-                                      onPressed: () {
-                                        firestore.deleteNote(docID);
-                                      },
-                                    ),
-                                  ],
+                              );
+                              return false; // ما تمسحش العنصر
+                            } else if (direction ==
+                                DismissDirection.endToStart) {
+                              // 👉 Delete
+                              await firestore.deleteNote(docID);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("${data['title']} deleted"),
                                 ),
-                              ],
+                              );
+                              return true; // يتمسح فعلاً
+                            }
+                            return false;
+                          },
+                          child: Card(
+                            color: Color(0xff1e2837),
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        noteTitle,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        noteTime,
+                                        style: TextStyle(
+                                          color: Colors.white30,
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    noteDescription,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: Colors.white30,
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      for (
+                                        var i = 0;
+                                        i < noteTags.length && i < 2;
+                                        i++
+                                      )
+                                        Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: getTagType(
+                                                noteTags[i],
+                                              ).color,
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 6,
+                                            ),
+                                            child: Text(
+                                              '#${noteTags[i]}',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                      // لو أكتر من ٢ تاج، اعمل "…+X"
+                                      if (noteTags.length > 2)
+                                        Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade700,
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 6,
+                                            ),
+                                            child: Text(
+                                              '+${noteTags.length - 2}',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                      const Spacer(),
+
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          color: Colors.white38,
+                                        ),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AddNote(docID: docID),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          CupertinoIcons.delete,
+                                          color: Colors.white38,
+                                        ),
+                                        onPressed: () {
+                                          firestore.deleteNote(docID);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

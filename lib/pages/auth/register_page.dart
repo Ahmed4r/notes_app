@@ -30,42 +30,40 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: SafeArea(
+      appBar: AppBar(
+        backgroundColor: AppColors.backgroundColor,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: Colors.grey[700],
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.edit, color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Pinotes',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             children: [
               // Header with Pinotes logo
-              Padding(
-                padding: const EdgeInsets.only(top: 40.0, bottom: 40.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[700],
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.access_time,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Text(
-                      'Pinotes',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
 
               // Create account text
               const Text(
@@ -226,10 +224,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
               // OR divider
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: Container(height: 1, color: Colors.grey[700]),
-                  ),
+                  Container(height: 1, color: Colors.grey[700]),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
@@ -237,9 +234,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       style: TextStyle(color: Colors.grey[400], fontSize: 14),
                     ),
                   ),
-                  Expanded(
-                    child: Container(height: 1, color: Colors.grey[700]),
-                  ),
+                  Container(height: 1, color: Colors.grey[700]),
                 ],
               ),
 
@@ -304,7 +299,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
 
-              const Spacer(),
+              // const Spacer(),
 
               // Login link
               Padding(

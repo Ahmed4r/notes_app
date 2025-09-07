@@ -79,6 +79,8 @@ class ShowNoteDetails extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
                               children: [
                                 for (var tag in tags)
                                   Chip(
@@ -152,7 +154,7 @@ class ShowNoteDetails extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.delete, color: Colors.white),
+                          Icon(CupertinoIcons.delete, color: Colors.white),
                           SizedBox(width: 10),
                           Text('Delete', style: TextStyle(color: Colors.white)),
                         ],

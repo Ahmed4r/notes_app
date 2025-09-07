@@ -7,7 +7,17 @@ import 'package:flutter/material.dart';
 
 class AddNote extends StatefulWidget {
   String? docID;
-  AddNote({super.key, this.docID});
+  String? oldTitle;
+  String? oldDescription;
+  List<String>? tags;
+
+  AddNote({
+    super.key,
+    this.docID,
+    this.oldTitle,
+    this.oldDescription,
+    this.tags,
+  });
 
   @override
   State<AddNote> createState() => _AddNoteState();
@@ -27,6 +37,15 @@ class _AddNoteState extends State<AddNote> {
   ];
   List<String> _tags = [];
 
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controllers and tags
+    titleController.text = widget.oldTitle ?? '';
+    descriptionController.text = widget.oldDescription ?? '';
+    _tags = List<String>.from(widget.tags ?? []);
+  }
+
   void _removeTag(String tag) {
     setState(() {
       _tags.remove(tag);
@@ -40,8 +59,6 @@ class _AddNoteState extends State<AddNote> {
       });
     }
   }
-
-  // خلي عندك ليست التاجات المتاحة
 
   void _showAddTagDialog() {
     showModalBottomSheet(
@@ -122,6 +139,14 @@ class _AddNoteState extends State<AddNote> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    titleController.dispose();
+    descriptionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -243,6 +268,7 @@ class _AddNoteState extends State<AddNote> {
               Center(
                 child: InkWell(
                   onTap: () {
+                    if (titleController.text.trim().isEmpty) return;
                     if (widget.docID == null) {
                       firestore.addNote(
                         titleController.text,
