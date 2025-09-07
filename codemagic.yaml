@@ -52,8 +52,3 @@ workflows:
 
     artifacts:
       - build/ios/iphoneos/FlutterIpaExport.ipa
-
-    notifications:
-      email:
-        recipients:
-          - "ahmedrady03@gmail.com"
