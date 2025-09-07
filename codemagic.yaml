@@ -1,0 +1,114 @@
+workflows:
+  ios-workflow:
+    name: iOS IPA Build
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/.pub-cache
+        - ios/Pods
+    scripts:
+      - name: Set up debug keystore
+        script: |
+          set -e # exit on first failed command
+          set -x # print all executed commands to the log
+          
+      - name: Set iOS deployment target
+        script: |
+          cd ios
+          if ! grep -q "platform :ios, '15.5'" Podfile; then
+            echo "platform :ios, '15.5'" | cat - Podfile > temp && mv temp Podfile
+          fi
+          cd ..
+          
+      - name: Clean and update CocoaPods
+        script: |
+          set -e
+          # Clean any existing build artifacts
+          flutter clean
+          # Get Flutter dependencies - this should generate the Podfile
+          flutter pub get
+          
+          # Check if Podfile was created
+          cd ios
+          if [ ! -f "Podfile" ]; then
+            echo "ERROR: Podfile not found after flutter pub get"
+            echo "Creating a basic Podfile..."
+            cat > Podfile << 'EOF'
+# Uncomment this line to define a global platform for your project
+platform :ios, '15.5'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  target 'RunnerTests' do
+    inherit! :search_paths
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+  end
+end
+EOF
+          fi
+          
+          # Install pods
+          pod install --repo-update
+          cd ..
+          
+      - name: Flutter build iOS
+        script: |
+          flutter build ios --release --no-codesign
+          
+      - name: Create IPA
+        script: |
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          mv Runner.app Payload/
+          zip -qq -r -9 FlutterIpaExport.ipa Payload
+          
+    artifacts:
+      - build/ios/iphoneos/FlutterIpaExport.ipa
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - ahmedrady03@example.com
+        notify:
+          success: true
+          failure: true
