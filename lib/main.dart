@@ -1,6 +1,4 @@
-import 'package:crud_firebase/pages/auth/login_page.dart';
-import 'package:crud_firebase/pages/home_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:crud_firebase/pages/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -18,13 +16,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Note App',
       theme: ThemeData.light(),
       themeMode: ThemeMode.dark,
       darkTheme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
-      home: FirebaseAuth.instance.currentUser == null
-          ? LoginPage()
-          : HomePage(),
+      home: SplashPage(),
     );
   }
 }

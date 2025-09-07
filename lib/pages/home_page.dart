@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crud_firebase/pages/add_note.dart';
 import 'package:crud_firebase/pages/auth/login_page.dart';
+import 'package:crud_firebase/pages/search_page.dart';
 import 'package:crud_firebase/pages/show_note_details.dart';
 import 'package:crud_firebase/service/firebase_auth.dart';
 import 'package:crud_firebase/service/firestore.dart';
@@ -21,11 +22,13 @@ class _HomePageState extends State<HomePage> {
   final firestore = FirestoreService();
 
   final TextEditingController controller = TextEditingController();
+
   final auth = FirebaseAuthService();
 
   @override
   void dispose() {
     controller.dispose();
+
     super.dispose();
   }
 
@@ -38,6 +41,15 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: AppColors.backgroundColor,
         appBar: AppBar(
           actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SearchPage()),
+                );
+              },
+              icon: const Icon(Icons.search, color: Colors.white),
+            ),
             IconButton(
               onPressed: () async {
                 try {
@@ -123,6 +135,7 @@ class _HomePageState extends State<HomePage> {
                                   title: noteTitle,
                                   description: noteDescription,
                                   docID: docID,
+                                  noteTime: noteTime,
                                   tags: noteTags,
                                 );
                               },
@@ -185,18 +198,21 @@ class _HomePageState extends State<HomePage> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        noteTitle,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold,
+                                      Expanded(
+                                        child: Text(
+                                          noteTitle,
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            color: Color(0xffFFFFFF),
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                       Text(
                                         noteTime,
                                         style: TextStyle(
-                                          color: Colors.white30,
+                                          color: Color(0xff81C784),
                                           fontWeight: FontWeight.normal,
                                           fontSize: 16,
                                         ),
@@ -208,7 +224,7 @@ class _HomePageState extends State<HomePage> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      color: Colors.white30,
+                                      color: Color(0xffB0B0B0),
                                       fontWeight: FontWeight.normal,
                                       fontSize: 16,
                                     ),
@@ -376,6 +392,7 @@ class _HomePageState extends State<HomePage> {
                                 return ShowNoteDetails(
                                   title: noteTitle,
                                   description: noteDescription,
+                                  noteTime: noteTime,
                                   docID: docID,
                                   tags: noteTags,
                                 );
@@ -439,18 +456,21 @@ class _HomePageState extends State<HomePage> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        noteTitle,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold,
+                                      Expanded(
+                                        child: Text(
+                                          noteTitle,
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            color: Color(0xffFFFFFF),
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                       Text(
                                         noteTime,
                                         style: TextStyle(
-                                          color: Colors.white30,
+                                          color: Color(0xff81C784),
                                           fontWeight: FontWeight.normal,
                                           fontSize: 16,
                                         ),
@@ -462,7 +482,7 @@ class _HomePageState extends State<HomePage> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      color: Colors.white30,
+                                      color: Color(0xffB0B0B0),
                                       fontWeight: FontWeight.normal,
                                       fontSize: 16,
                                     ),
@@ -604,6 +624,7 @@ class _HomePageState extends State<HomePage> {
                                 return ShowNoteDetails(
                                   title: noteTitle,
                                   description: noteDescription,
+                                  noteTime: noteTime,
                                   docID: docID,
                                   tags: noteTags,
                                 );
@@ -667,18 +688,21 @@ class _HomePageState extends State<HomePage> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        noteTitle,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold,
+                                      Expanded(
+                                        child: Text(
+                                          noteTitle,
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            color: Color(0xffFFFFFF),
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                       Text(
                                         noteTime,
                                         style: TextStyle(
-                                          color: Colors.white30,
+                                          color: Color(0xff81C784),
                                           fontWeight: FontWeight.normal,
                                           fontSize: 16,
                                         ),
@@ -690,7 +714,7 @@ class _HomePageState extends State<HomePage> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      color: Colors.white30,
+                                      color: Color(0xffB0B0B0),
                                       fontWeight: FontWeight.normal,
                                       fontSize: 16,
                                     ),

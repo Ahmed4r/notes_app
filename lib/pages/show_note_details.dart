@@ -8,12 +8,14 @@ class ShowNoteDetails extends StatelessWidget {
   String title;
   String description;
   String? docID;
+  String noteTime;
   List<String> tags;
   ShowNoteDetails({
     super.key,
     required this.title,
     required this.description,
     this.docID,
+    required this.noteTime,
     required this.tags,
   });
   final firestore = FirestoreService();
@@ -62,7 +64,7 @@ class ShowNoteDetails extends StatelessWidget {
                       Text(
                         title,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Color(0xffFFFFFF),
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
                         ),
@@ -70,7 +72,15 @@ class ShowNoteDetails extends StatelessWidget {
                       Text(
                         description,
                         style: TextStyle(
-                          color: Colors.white30,
+                          color: Color(0xffB0B0B0),
+                          fontWeight: FontWeight.normal,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        noteTime,
+                        style: TextStyle(
+                          color: Color(0xff81C784),
                           fontWeight: FontWeight.normal,
                           fontSize: 16,
                         ),

@@ -13,14 +13,14 @@ class FirestoreService {
   Future<void> addNote(
     String titleNote,
     String descriptionNote,
-    List<String> _tags,
+    List<String> tags,
   ) {
     final uid = FirebaseAuth.instance.currentUser!.uid;
 
     return notes.add({
       "title": titleNote,
       "description": descriptionNote,
-      "tags": _tags,
+      "tags": tags,
       'timestamp': Timestamp.now(),
       'uid': uid, // ربط النوت باليوزر
     });

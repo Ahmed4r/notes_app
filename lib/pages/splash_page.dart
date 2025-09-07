@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:crud_firebase/pages/auth/login_page.dart';
 import 'package:crud_firebase/pages/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,11 +12,16 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   @override
-  @override
   void initState() {
     super.initState();
 
-    Future.delayed(const Duration(seconds: 3), () async {});
+    Future.delayed(const Duration(seconds: 3), () async {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (context) => FirebaseAuth.instance.currentUser == null
+            ? LoginPage()
+            : HomePage(),
+      ));
+    });
   }
 
   @override
