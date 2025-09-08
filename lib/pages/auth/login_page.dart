@@ -291,8 +291,29 @@ class _LoginPageState extends State<LoginPage> {
               width: double.infinity,
               height: 50,
               child: OutlinedButton.icon(
-                onPressed: () {
-                  // Handle Google sign in
+                onPressed: () async {
+                  try {
+                    UserCredential userCredential = await authService
+                        .signInWithGoogle();
+                    if (userCredential.user != null && mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Login successful!')),
+                      );
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                      );
+                    }
+                  } catch (error) {
+                    log('Google sign-in failed: $error');
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Google sign-in failed: $error'),
+                        ),
+                      );
+                    }
+                  }
                 },
                 style: OutlinedButton.styleFrom(
                   backgroundColor: const Color(0xff1e2328),
