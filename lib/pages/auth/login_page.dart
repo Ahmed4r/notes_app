@@ -5,6 +5,7 @@ import 'package:crud_firebase/pages/home_page.dart';
 import 'package:crud_firebase/service/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../shared/app_colors.dart';
 
 class LoginPage extends StatefulWidget {
@@ -34,11 +35,11 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: AppColors.backgroundColor,
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text(
+        title: Text(
           'Pinotes',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 24,
+            fontSize: 24.sp,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -52,334 +53,344 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
       backgroundColor: AppColors.backgroundColor,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Header with info icon
-            const SizedBox(height: 40),
-            // Welcome text
-            const Text(
-              'Welcome Back',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Log in to access your notes.',
-              style: TextStyle(color: Colors.grey, fontSize: 16),
-            ),
-
-            const SizedBox(height: 40),
-            Column(
-              children: [
-                // Email field
-                SizedBox(
-                  width: 390,
-                  child: TextField(
-                    controller: _emailController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'Email',
-                      hintStyle: TextStyle(color: Colors.grey[400]),
-                      filled: true,
-                      fillColor: const Color(0xff1e2328),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                    ),
-                  ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Header with info icon
+              SizedBox(height: 40.h),
+              // Welcome text
+              Text(
+                'Welcome Back',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 32.sp,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 16),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                'Log in to access your notes.',
+                style: TextStyle(color: Colors.grey, fontSize: 16.sp),
+              ),
 
-                // Password field
-                SizedBox(
-                  width: 390,
-                  child: TextField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'Password',
-                      hintStyle: TextStyle(color: Colors.grey[400]),
-                      filled: true,
-                      fillColor: const Color(0xff1e2328),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: Colors.grey[400],
+              SizedBox(height: 40.h),
+              Column(
+                children: [
+                  // Email field
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextField(
+                      controller: _emailController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: 'Email',
+                        hintStyle: TextStyle(color: Colors.grey[400]),
+                        filled: true,
+                        fillColor: const Color(0xff1e2328),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                          borderSide: BorderSide.none,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            // Forgot password
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  // Handle forgot password
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ForgotPasswordPage(),
-                    ),
-                  );
-                },
-                child: const Text(
-                  'Forgot Password?',
-                  style: TextStyle(color: Color(0xff4A9EFF), fontSize: 14),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Login button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () async {
-                  // Validate input fields
-                  if (_emailController.text.trim().isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please enter your email')),
-                    );
-                    return;
-                  }
-
-                  if (_passwordController.text.trim().isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please enter your password'),
-                      ),
-                    );
-                    return;
-                  }
-
-                  try {
-                    User? user = await authService.signInWithEmailAndPassword(
-                      _emailController.text.trim(),
-                      _passwordController.text.trim(),
-                    );
-
-                    if (user != null && mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Login successful!')),
-                      );
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
-                    }
-                  } on FirebaseAuthException catch (e) {
-                    if (mounted) {
-                      switch (e.code) {
-                        case 'user-not-found':
-                          log('User not found');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('User not found')),
-                          );
-                          break;
-
-                        case 'wrong-password':
-                          log('Wrong password');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Wrong password')),
-                          );
-                          break;
-
-                        case 'invalid-email':
-                          log('Invalid email');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Invalid email')),
-                          );
-                          break;
-
-                        case 'invalid-credential':
-                          log('Invalid credentials');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Invalid email or password'),
-                            ),
-                          );
-                          break;
-
-                        default:
-                          log('Login failed: ${e.code}');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: ${e.code}')),
-                          );
-                          break;
-                      }
-                    }
-                  } catch (e) {
-                    log('Unexpected error: $e');
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Unexpected error: $e')),
-                      );
-                    }
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff4A9EFF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Log In',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 32),
-
-            // OR divider
-            Row(
-              children: [
-                Expanded(child: Container(height: 1, color: Colors.grey[700])),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'OR',
-                    style: TextStyle(color: Colors.grey[400], fontSize: 14),
-                  ),
-                ),
-                Expanded(child: Container(height: 1, color: Colors.grey[700])),
-              ],
-            ),
-
-            const SizedBox(height: 24),
-
-            // Google sign in button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: OutlinedButton.icon(
-                onPressed: () async {
-                  try {
-                    UserCredential userCredential = await authService
-                        .signInWithGoogle();
-                    if (userCredential.user != null && mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Login successful!')),
-                      );
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
-                    }
-                  } catch (error) {
-                    log('Google sign-in failed: $error');
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Google sign-in failed: $error'),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 16.h,
                         ),
-                      );
-                    }
-                  }
-                },
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: const Color(0xff1e2328),
-                  side: BorderSide.none,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
-                ),
-                icon: Image.asset(
-                  'assets/google_icon.png', // You'll need to add this asset
-                  width: 20,
-                  height: 20,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(
-                      Icons.g_mobiledata,
-                      color: Colors.white,
-                      size: 24,
+                  SizedBox(height: 16.h),
+
+                  // Password field
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextField(
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: 'Password',
+                        hintStyle: TextStyle(color: Colors.grey[400]),
+                        filled: true,
+                        fillColor: const Color(0xff1e2328),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 16.h,
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Colors.grey[400],
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 16.h), // Forgot password
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    // Handle forgot password
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ForgotPasswordPage(),
+                      ),
                     );
                   },
-                ),
-                label: const Text(
-                  'Sign in with Google',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Apple sign in button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  // Handle Apple sign in
-
-                  // ahmedrady03@gmail.com
-                  // 123456aa
-                },
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: const Color(0xff1e2328),
-                  side: BorderSide.none,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                      color: const Color(0xff4A9EFF),
+                      fontSize: 14.sp,
+                    ),
                   ),
                 ),
-                icon: const Icon(Icons.apple, color: Colors.white, size: 20),
-                label: const Text(
-                  'Sign in with Apple',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+
+              SizedBox(height: 24.h),
+
+              // Login button
+              SizedBox(
+                width: double.infinity,
+                height: 50.h,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    // Validate input fields
+                    if (_emailController.text.trim().isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please enter your email'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    if (_passwordController.text.trim().isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please enter your password'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    try {
+                      User? user = await authService.signInWithEmailAndPassword(
+                        _emailController.text.trim(),
+                        _passwordController.text.trim(),
+                      );
+
+                      if (user != null && mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Login successful!')),
+                        );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                        );
+                      }
+                    } on FirebaseAuthException catch (e) {
+                      if (mounted) {
+                        switch (e.code) {
+                          case 'user-not-found':
+                            log('User not found');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('User not found')),
+                            );
+                            break;
+
+                          case 'wrong-password':
+                            log('Wrong password');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Wrong password')),
+                            );
+                            break;
+
+                          case 'invalid-email':
+                            log('Invalid email');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Invalid email')),
+                            );
+                            break;
+
+                          case 'invalid-credential':
+                            log('Invalid credentials');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Invalid email or password'),
+                              ),
+                            );
+                            break;
+
+                          default:
+                            log('Login failed: ${e.code}');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error: ${e.code}')),
+                            );
+                            break;
+                        }
+                      }
+                    } catch (e) {
+                      log('Unexpected error: $e');
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Unexpected error: $e')),
+                        );
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xff4A9EFF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                  child: Text(
+                    'Log In',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
-            ),
 
-            // const Spacer(),
+              SizedBox(height: 32.h),
 
-            // Register link
-            Padding(
-              padding: const EdgeInsets.only(bottom: 32),
-              child: Row(
+              // OR divider
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(height: 1, color: Colors.grey[700]),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: Text(
+                      'OR',
+                      style: TextStyle(
+                        color: Colors.grey[400],
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(height: 1, color: Colors.grey[700]),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 24.h),
+
+              // Google sign in button
+              SizedBox(
+                width: double.infinity,
+                height: 50.h,
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    try {
+                      UserCredential userCredential = await authService
+                          .signInWithGoogle();
+                      if (userCredential.user != null && mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Login successful!')),
+                        );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                        );
+                      }
+                    } catch (error) {
+                      log('Google sign-in failed: $error');
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Google sign-in failed: $error'),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: const Color(0xff1e2328),
+                    side: BorderSide.none,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                  icon: Image.asset(
+                    'assets/google_icon.png', // You'll need to add this asset
+                    width: 20.w,
+                    height: 20.h,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(
+                        Icons.g_mobiledata,
+                        color: Colors.white,
+                        size: 24.sp,
+                      );
+                    },
+                  ),
+                  label: Text(
+                    'Sign in with Google',
+                    style: TextStyle(color: Colors.white, fontSize: 16.sp),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 16.h),
+
+              // Apple sign in button
+              SizedBox(
+                width: double.infinity,
+                height: 50.h,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    // Handle Apple sign in
+
+                    // ahmedrady03@gmail.com
+                    // 123456aa
+                  },
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: const Color(0xff1e2328),
+                    side: BorderSide.none,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                  icon: Icon(Icons.apple, color: Colors.white, size: 20.sp),
+                  label: Text(
+                    'Sign in with Apple',
+                    style: TextStyle(color: Colors.white, fontSize: 16.sp),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 32.h),
+
+              // Register link
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Don't have an account? ",
-                    style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                    style: TextStyle(color: Colors.grey[400], fontSize: 14.sp),
                   ),
                   TextButton(
                     onPressed: () {
@@ -389,19 +400,19 @@ class _LoginPageState extends State<LoginPage> {
                         MaterialPageRoute(builder: (context) => RegisterPage()),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       'Register',
                       style: TextStyle(
-                        color: Color(0xff4A9EFF),
-                        fontSize: 14,
+                        color: const Color(0xff4A9EFF),
+                        fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

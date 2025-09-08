@@ -217,7 +217,6 @@ class _ShowNoteDetailsState extends State<ShowNoteDetails> {
           if (!snapshot.hasData) {
             return Center(child: Text('Note not found'));
           }
-
           final note = snapshot.data!;
           final title = note['title'] ?? 'No Title';
           final description = note['description'] ?? 'No Description';

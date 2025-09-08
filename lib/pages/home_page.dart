@@ -8,6 +8,7 @@ import 'package:crud_firebase/service/firestore.dart';
 import 'package:crud_firebase/shared/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
@@ -69,7 +70,10 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
           backgroundColor: AppColors.backgroundColor,
-          title: const Text('Pinotes', style: TextStyle(color: Colors.white)),
+          title: Text(
+            'Pinotes',
+            style: TextStyle(color: Colors.white, fontSize: 20.sp),
+          ),
           bottom: TabBar(
             splashBorderRadius: BorderRadius.circular(50),
 
