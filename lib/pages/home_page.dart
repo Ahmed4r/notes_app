@@ -7,12 +7,11 @@ import 'package:crud_firebase/service/firebase_auth.dart';
 import 'package:crud_firebase/service/firestore.dart';
 import 'package:crud_firebase/shared/app_colors.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -294,8 +293,12 @@ class _HomePageState extends State<HomePage> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) =>
-                                                  AddNote(docID: docID),
+                                              builder: (context) => AddNote(
+                                                docID: docID,
+                                                oldTitle: noteTitle,
+                                                oldDescription: noteDescription,
+                                                tags: noteTags,
+                                              ),
                                             ),
                                           );
                                         },
@@ -551,8 +554,12 @@ class _HomePageState extends State<HomePage> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) =>
-                                                  AddNote(docID: docID),
+                                              builder: (context) => AddNote(
+                                                docID: docID,
+                                                oldTitle: noteTitle,
+                                                oldDescription: noteDescription,
+                                                tags: noteTags,
+                                              ),
                                             ),
                                           );
                                         },
@@ -783,8 +790,12 @@ class _HomePageState extends State<HomePage> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) =>
-                                                  AddNote(docID: docID),
+                                              builder: (context) => AddNote(
+                                                docID: docID,
+                                                oldTitle: noteTitle,
+                                                oldDescription: noteDescription,
+                                                tags: noteTags,
+                                              ),
                                             ),
                                           );
                                         },
