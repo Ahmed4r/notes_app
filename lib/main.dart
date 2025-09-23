@@ -8,11 +8,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(MyApp());
+  runApp(NoteApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class NoteApp extends StatelessWidget {
+  const NoteApp({super.key});
 
   @override
   Widget build(BuildContext context) {

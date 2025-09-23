@@ -1,16 +1,17 @@
-#note app
+# Note App
 
-A new Flutter project.
+A versatile cross-platform note-taking application built using Flutter. This project showcases the implementation of CRUD operations, local data storage, and a user-friendly interface for managing personal notes.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- Create, read, update, and delete notes using firebase firestore.
+- Clean and intuitive user interface.
+- Cross-platform support (Android, iOS, etc.).
+- authentication using firebase authentication.
+- Responsive design for various screen sizes.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Screenshots
+![Screenshot 1](screenshots/add.jpeg)
+![Screenshot 2](screenshots/login.jpeg)
+![Screenshot 3](screenshots/search.jpeg)
+![Screenshot 3](screenshots/summary.jpeg)

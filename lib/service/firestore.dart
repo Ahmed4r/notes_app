@@ -17,13 +17,15 @@ class FirestoreService {
   ) {
     final uid = FirebaseAuth.instance.currentUser!.uid;
 
-    return notes.add({
+    return notes.add(
+      {
       "title": titleNote,
       "description": descriptionNote,
       "tags": tags,
       'timestamp': Timestamp.now(),
       'uid': uid, // ربط النوت باليوزر
-    });
+    }
+    );
   }
 
   // todo :  read
