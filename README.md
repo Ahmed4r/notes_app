@@ -11,7 +11,16 @@ A versatile cross-platform note-taking application built using Flutter. This pro
 - Responsive design for various screen sizes.
 
 ## Screenshots
-![Screenshot 1](screenshots/add.jpeg)
-![Screenshot 2](screenshots/login.jpeg)
-![Screenshot 3](screenshots/search.jpeg)
-![Screenshot 3](screenshots/summary.jpeg)
+
+<table>
+  <tr>
+    <td><img src="screenshots/add.jpeg" alt="Add Note" width="200"/></td>
+    <td><img src="screenshots/login.jpeg" alt="Login" width="200"/></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/search.jpeg" alt="Search" width="200"/></td>
+    <td><img src="screenshots/summary.jpeg" alt="Summary" width="200"/></td>
+  </tr>
+</table>
+
+
