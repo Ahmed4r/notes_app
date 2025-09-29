@@ -20,14 +20,16 @@ class NoteApp extends StatelessWidget {
       designSize: const Size(375, 812), // iPhone X design size
       minTextAdapt: true,
       splitScreenMode: true,
-      child: MaterialApp(
-        title: 'Note App',
-        theme: ThemeData.light(),
-        themeMode: ThemeMode.dark,
-        darkTheme: ThemeData.dark(),
-        debugShowCheckedModeBanner: false,
-        home: const SplashPage(),
-      ),
+      builder: (context, child) {
+        return MaterialApp(
+          title: 'Note App',
+          theme: ThemeData.light(),
+          themeMode: ThemeMode.dark,
+          darkTheme: ThemeData.dark(),
+          debugShowCheckedModeBanner: false,
+          home: const SplashPage(),
+        );
+      },
     );
   }
 }
