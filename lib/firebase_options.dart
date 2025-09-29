@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -63,6 +60,19 @@ class DefaultFirebaseOptions {
     messagingSenderId: '732670439433',
     projectId: 'eduportal-69436',
     storageBucket: 'eduportal-69436.firebasestorage.app',
+    androidClientId: '732670439433-dk55go1iq30pk193jtvgcg81bvu58n1v.apps.googleusercontent.com',
+    iosClientId: '732670439433-9hkrocjp7eddeu159psb4f8p1itu8con.apps.googleusercontent.com',
     iosBundleId: 'com.example.crudFirebase',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBsccoZsQbgzM1m6bCkB__9DJR6G575q9k',
+    appId: '1:732670439433:web:91318dd0d11013a05cc8d8',
+    messagingSenderId: '732670439433',
+    projectId: 'eduportal-69436',
+    authDomain: 'eduportal-69436.firebaseapp.com',
+    storageBucket: 'eduportal-69436.firebasestorage.app',
+    measurementId: 'G-CT52XT3JGS',
+  );
+
 }
