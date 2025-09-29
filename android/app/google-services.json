@@ -14,14 +14,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "732670439433-dk55go1iq30pk193jtvgcg81bvu58n1v.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.crud_firebase",
-            "certificate_hash": "8711a9c35c0199b01f076543daa49c63d2b3d043"
-          }
-        },
-        {
           "client_id": "732670439433-kru03mbm564ou9ajv1m5h4k4ggsfba82.apps.googleusercontent.com",
           "client_type": 3
         }
